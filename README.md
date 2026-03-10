@@ -22,7 +22,9 @@ Databases are not just diagrams. They are architecture, and architecture must be
 
 Schema file (PDF): [EER DIAGRAM.pdf](schema/EER%20DIAGRAM.pdf)
 
-> Note: GitHub does not reliably render PDF files as inline images in README files. Use the link above to open the schema directly.
+Schema preview:
+
+![Maji Ndogo EER Diagram](schema/EER%20DIAGRAM.png)
 
 ## Tags
 
