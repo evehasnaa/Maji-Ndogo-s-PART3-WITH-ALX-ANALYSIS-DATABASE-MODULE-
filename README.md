@@ -37,12 +37,6 @@ With a stable architecture, I moved to the audit phase, comparing internal surve
 * **The Suspect List:** Using **CTEs** and **Subqueries**, I identified 4 specific employees whose error rates were statistically significantly higher than the peer average.
 * **Corruption Patterns:** By cross-referencing these 102 records with the `statements` column, the data revealed a disturbing narrative pattern—villagers reported "official arrogance" and suspicious behavior, confirming that these discrepancies were likely intentional tampering rather than human error.
 
----
-
-## 3. SQL Logic Sample: Identifying Anomalies
-
-The following query was instrumental in isolating the "Suspect List" by filtering employees with an above-average frequency of discrepancies:
-
 
 ---
 
