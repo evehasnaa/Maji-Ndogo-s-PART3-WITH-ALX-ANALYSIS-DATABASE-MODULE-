@@ -1,4 +1,4 @@
-# Maji Ndogo Water Project: Data Architecture & Forensic Audit (Part 3)
+# Maji Ndogo Water Project: Data Architecture & Key Insights (Part 3) 
 
 ## Project Overview
 This project focuses on the infrastructure and integrity of the **Maji Ndogo** water source database. As part of the ALX Data Analytics program, I undertook a dual-phase mission: first, to manually refine a complex relational schema to ensure architectural integrity, and second, to perform a forensic audit to uncover data discrepancies and potential corruption in water quality reporting.
@@ -43,29 +43,7 @@ With a stable architecture, I moved to the audit phase, comparing internal surve
 
 The following query was instrumental in isolating the "Suspect List" by filtering employees with an above-average frequency of discrepancies:
 
-### Identifying Anomalies (SQL Sample)
 
-The following query was instrumental in isolating the "Suspect List" by filtering employees with an above-average frequency of discrepancies:
-
-```sql
-WITH error_count AS (
-    /* Aggregates the number of discrepancies attributed to each employee */
-    SELECT 
-        employee_name, 
-        COUNT(*) AS number_of_mistakes
-    FROM 
-        Incorrect_records
-    GROUP BY 
-        employee_name
-)
-/* Filters for employees whose mistake count exceeds the team average */
-SELECT 
-    employee_name, 
-    number_of_mistakes
-FROM 
-    error_count
-WHERE 
-    number_of_mistakes > (SELECT AVG(number_of_mistakes) FROM error_count);
 ---
 
 ## Tools & Technologies
