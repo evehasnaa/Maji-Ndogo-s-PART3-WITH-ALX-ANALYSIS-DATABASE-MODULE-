@@ -43,7 +43,6 @@ With a stable architecture, I moved to the audit phase, comparing internal surve
 
 The following query was instrumental in isolating the "Suspect List" by filtering employees with an above-average frequency of discrepancies:
 
-```sql
 WITH error_count AS (
     /* Aggregates the number of discrepancies attributed to each employee */
     SELECT 
