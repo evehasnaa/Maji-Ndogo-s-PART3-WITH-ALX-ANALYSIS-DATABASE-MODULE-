@@ -1,31 +1,76 @@
-# Maji Ndogo Part 3 - ALX Analysis Database Module
+# Maji Ndogo Water Project: Data Architecture & Forensic Audit (Part 3)
 
-## Do Not Blindly Trust EER Diagrams
+## Project Overview
+This project focuses on the infrastructure and integrity of the **Maji Ndogo** water source database. As part of the ALX Data Analytics program, I undertook a dual-phase mission: first, to manually refine a complex relational schema to ensure architectural integrity, and second, to perform a forensic audit to uncover data discrepancies and potential corruption in water quality reporting.
 
-One of the biggest mistakes you can make while working with MySQL Workbench is trusting auto-generated EER diagrams without validating the database logic.
+---
 
-In Week 3 of the ALX Data Analytics course, I worked on the schema for the Maji Ndogo water source project (Part 3). During modeling, I found multiple issues caused by automatic relationship suggestions:
+## 1. Database Architecture & Schema Design
 
-- Extra columns were added without real need.
-- A table that should not have a direct relationship in the star schema was linked anyway.
-- This forced a manual, step-by-step cleanup of the diagram.
+### "Do Not Blindly Trust EER Diagrams"
+A pivotal lesson from this project is that automation is not a substitute for architectural understanding. While utilizing MySQL Workbench to model the Part 3 schema, I discovered several critical flaws in auto-generated relationship suggestions:
 
-For example, Workbench tried to add a redundant column like `location_location_id` to create a relationship between `auditor_report` and `location`, even though `location_id` already represented the needed relation. This introduced redundancy and hurt normalization.
+* **Redundant Columns:** Workbench attempted to force relationships by creating extra columns like `location_location_id` between `auditor_report` and `location`, despite `location_id` already serving as the valid link. This threatened the database's normalization and introduced unnecessary bulk.
+* **Normalization & Star Schema Risks:** The tool suggested direct links between tables that should remain independent in a clean Star Schema, which would have compromised the 3rd Normal Form (3NF).
+* **Synchronization Failures:** Automated PK/FK enforcement between `global_water_access` and `water_source` caused synchronization errors. These occurred due to pre-existing duplicate records and `NULL` values that conflicted with rigid, auto-applied unique constraints.
 
-Even worse, it attempted to enforce an automatic PK/FK relationship between `global_water_access` and `water_source`. That caused synchronization/update errors when exposing a created view, due to duplicated records or attempts to enforce unique constraints on columns containing `NULL` values.
+**The Solution:** I performed a manual, step-by-step cleanup of the EER diagram. By stripping away redundant relationships and correcting the model logic, I ensured a lean, professional architecture built on sound engineering principles rather than automated "best guesses."
 
-I fixed this manually by removing unnecessary relationships and correcting the model logic.
-
-Databases are not just diagrams. They are architecture, and architecture must be built and reviewed carefully, step by step.
-
-## EER Schema
-
-Schema file (PDF): [EER DIAGRAM.pdf](schema/EER%20DIAGRAM.pdf)
-
-Schema preview:
-
+### EER Schema Preview
 ![Maji Ndogo EER Diagram](schema/EER%20DIAGRAM.png)
+*Schema file (PDF): [EER DIAGRAM.pdf](schema/EER%20DIAGRAM.pdf)*
 
-## Tags
+---
 
-`SQL` `DatabaseDesign` `MySQL` `DataAnalysis` `TechnicalArchitecture` `ProblemSolving` `DataEngineering` `DatabaseNormalization` `ALX` `MajiNdogo`
+## 2. Forensic Data Audit & Insights
+
+With a stable architecture, I moved to the audit phase, comparing internal surveyor data against an independent **Auditor’s Report** to verify the truth behind the numbers.
+
+### Technical Implementation
+1.  **Complex Integration:** I utilized advanced `JOIN` logic to merge the `auditor_report` with the `visits` and `water_quality` tables.
+2.  **Data Cleaning:** Implemented `WHERE visits.visit_count = 1` to eliminate duplicate location entries and ensure a 1-to-1 comparison per site.
+3.  **Encapsulation:** Created a `VIEW` named `Incorrect_records` to isolate every instance where internal surveyor scores diverged from independent auditor findings.
+
+### Key Insights & Findings
+* **94% System Integrity:** Analysis showed that 1,518 out of 1,620 records matched the audit, indicating a generally reliable reporting system.
+* **The 6% Discrepancy:** 102 records were identified as fraudulent or incorrect. Notably, while the *source type* was usually reported accurately, the *quality scores* were frequently inflated by internal staff.
+* **The Suspect List:** Using **CTEs** and **Subqueries**, I identified 4 specific employees whose error rates were statistically significantly higher than the peer average.
+* **Corruption Patterns:** By cross-referencing these 102 records with the `statements` column, the data revealed a disturbing narrative pattern—villagers reported "official arrogance" and suspicious behavior, confirming that these discrepancies were likely intentional tampering rather than human error.
+
+---
+
+## 3. SQL Logic Sample: Identifying Anomalies
+
+The following query was instrumental in isolating the "Suspect List" by filtering employees with an above-average frequency of discrepancies:
+
+```sql
+WITH error_count AS (
+    /* Aggregates the number of discrepancies attributed to each employee */
+    SELECT 
+        employee_name, 
+        COUNT(*) AS number_of_mistakes
+    FROM 
+        Incorrect_records
+    GROUP BY 
+        employee_name
+)
+/* Filters for employees whose mistake count exceeds the team average */
+SELECT 
+    employee_name, 
+    number_of_mistakes
+FROM 
+    error_count
+WHERE 
+    number_of_mistakes > (SELECT AVG(number_of_mistakes) FROM error_count);
+
+## Tools & Technologies
+* **DBMS:** MySQL
+* **Modeling:** MySQL Workbench (Manual Schema Refinement)
+* **Analytics:** SQL (CTEs, Views, Subqueries, Aggregate Functions)
+
+---
+
+## Conclusion
+This project demonstrates that databases are not just sets of tables, but complex architectures that require human oversight. By combining rigorous schema design with forensic SQL analysis, I was able to transform raw data into a tool for transparency and organizational accountability.
+
+**Developed by Hasnaa | ALX Data Analytics**
