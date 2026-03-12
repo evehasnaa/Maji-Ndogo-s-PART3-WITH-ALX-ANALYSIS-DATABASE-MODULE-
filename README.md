@@ -62,6 +62,7 @@ FROM
     error_count
 WHERE 
     number_of_mistakes > (SELECT AVG(number_of_mistakes) FROM error_count);
+---
 
 ## Tools & Technologies
 * **DBMS:** MySQL
